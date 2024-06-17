@@ -1,2 +1,2 @@
 # A* in MATLAB
-[demo](demo.png)
+[demo](demo.jpg)

@@ -1,2 +1,2 @@
 # A* in MATLAB
-[demo](demo.jpg)
+<img src="demo.jpg" width="600">

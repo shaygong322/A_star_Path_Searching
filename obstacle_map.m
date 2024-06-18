@@ -1,4 +1,4 @@
- function map = obstacle_map(xStart,yStart,xTarget,yTarget,MAX_X,MAX_Y)
+function map = obstacle_map(xStart,yStart,xTarget,yTarget,MAX_X,MAX_Y)
 %This function returns a map contains random distribution obstacles.
     rand_map = rand(MAX_X,MAX_Y);
     map = [];
@@ -11,7 +11,7 @@
             if( (rand_map(i,j) < obstacle_ratio) && (i~= xStart || j~=yStart) && (i~= xTarget || j~=yTarget))
                 map(k,1) = i;
                 map(k,2) = j;
-                k=k+1;
+                k = k+1;
             end    
         end
     end

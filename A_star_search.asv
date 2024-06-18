@@ -1,4 +1,4 @@
-function [path, OPEN] = A_star_search(map,MAX_X,MAX_Y)
+function path = A_star_search(map,MAX_X,MAX_Y)
 %%
 %This part is about map/obstacle/and other settings
     %pre-process the grid map, add offset
@@ -39,6 +39,7 @@ function [path, OPEN] = A_star_search(map,MAX_X,MAX_Y)
     %--------------
     %X val | Y val |
     %--------------
+    % CLOSED=zeros(MAX_VAL,2);
     CLOSED = [];
 
     %Put all obstacles on the Closed list
@@ -73,8 +74,8 @@ function [path, OPEN] = A_star_search(map,MAX_X,MAX_Y)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % START ALGORITHM
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    while ~isempty(find(OPEN(:, 1), 1)) %you have to dicide the Conditions for while loop exit
-        i_min = min_fn(OPEN, OPEN_COUNT);
+    while(~all(OPEN(:, 1) == 0)) %you have to dicide the Conditions for while loop exit
+        i_min = min_fn(OPEN, OPEN_COUNT)
 
         OPEN(i_min,1)=0;
         CLOSED_COUNT = CLOSED_COUNT + 1;
@@ -91,7 +92,7 @@ function [path, OPEN] = A_star_search(map,MAX_X,MAX_Y)
         
         gn = OPEN(i_min,7);
         % 扩散节点node的邻近节点，返回由邻近节点数据组成的矩阵exp_array
-        exp_array = expand_array(xNode, yNode, gn, xTarget, yTarget, CLOSED, MAX_X, MAX_Y);
+        exp_array = expand_array(node_x, node_y, gn, xTarget, yTarget, CLOSED, MAX_X, MAX_Y);
         n_neighbor = size(exp_array,1);
 
         for i = 1:n_neighbor
@@ -102,12 +103,23 @@ function [path, OPEN] = A_star_search(map,MAX_X,MAX_Y)
             fval = exp_array(i,5);
             
             j = node_index(OPEN,xval,yval);
-            if isempty(j)
+            if ~isempty(j)
                 OPEN_COUNT = OPEN_COUNT + 1;
-                OPEN(OPEN_COUNT,:) = insert_open(xval, yval, xNode, yNode, hval, gval, fval);
+                OPEN(OPEN_COUNT,1) = 1;
+                OPEN(OPEN_COUNT,2) = xval;
+                OPEN(OPEN_COUNT,3) = yval;
+                OPEN(OPEN_COUNT,4) = xNode;
+                OPEN(OPEN_COUNT,5) = yNode;
+                OPEN(OPEN_COUNT,6) = hval;
+                OPEN(OPEN_COUNT,7) = gval;
+                OPEN(OPEN_COUNT,8) = fval;
             else
                 if fval < OPEN(j,8)
-                     OPEN(j, 4:8) = [xNode, yNode, hval, gval, fval];
+                    OPEN(OPEN_COUNT,4) = xNode;
+                    OPEN(OPEN_COUNT,5) = yNode;
+                    OPEN(OPEN_COUNT,6) = hval;
+                    OPEN(OPEN_COUNT,7) = gval;
+                    OPEN(OPEN_COUNT,8) = fval;
                 end    
             end    
         end
@@ -130,14 +142,14 @@ function [path, OPEN] = A_star_search(map,MAX_X,MAX_Y)
         yval = yTarget;
         path(k,1) = xval;
         path(k,2) = yval;
-        while xval ~= xStart || yval ~= yStart
+        while xval ~= xStart && yval ~= xStart
             i = node_index(OPEN,xval,yval);
-            xval = OPEN(i,4);
-            yval = OPEN(i,5);
+            xParent = OPEN(i,4);
+            yParent = OPEN(i,5);
             k = k + 1;
-            path(k,1) = xval;
-            path(k,2) = yval;
+            path(k,1) = xParent;
+            path(k,2) = yParent;
         end
-        path = flipud(path);
+        path = flip(path);
     end    
 end
